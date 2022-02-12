@@ -8,4 +8,27 @@ use Illuminate\Database\Eloquent\Model;
 class Company extends Model
 {
     use HasFactory;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+    	'name', 
+        'email',
+        'logo',
+        'website'
+    ];
+
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+
+    public function author()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
