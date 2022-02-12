@@ -2,8 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Symfony\Component\HttpFoundation\Response;
+use App\Http\Resources\EmployeeResourceCollection;
+use Illuminate\Support\Facades\Hash;
+use App\Http\Resources\EmployeeResource;
+use App\Http\Requests\EmployeeRequest;
 use App\Models\Employee;
-use Illuminate\Http\Request;
+use Auth;
 
 class EmployeeController extends Controller
 {

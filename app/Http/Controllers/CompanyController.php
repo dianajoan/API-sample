@@ -2,8 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Symfony\Component\HttpFoundation\Response;
+use App\Http\Resources\CompanyResourceCollection;
+use Illuminate\Support\Facades\Hash;
+use App\Http\Resources\CompanyResource;
+use App\Http\Requests\CompanyRequest;
 use App\Models\Company;
-use Illuminate\Http\Request;
+use Auth;
 
 class CompanyController extends Controller
 {

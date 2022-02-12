@@ -15,7 +15,12 @@ class CompanyResource extends JsonResource
     public function toArray($request)
     {
         return [
-
+            'company-id'    => $this->id,
+            'name'      => $this->name,
+            'email'      => $this->email,
+            'logo'      => $this->logo,
+            'website'      => $this->website,
+            'created'   => $this->created_at->toDayDateTimeString(),
         ];
     }
 }

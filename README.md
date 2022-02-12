@@ -1,14 +1,15 @@
-## About Projectcode 
+<img src="https://github.com/ismailasega/projectCode-interview/blob/main/img/pcLogo.png" alt="PC_Logo" width="564" height="140">
 
 # Backend Developer Task
-# Using the technoligies below:
 
+ Using the technoligies below:
 - Laravel v8
 - Authentication - JWT
 - Database - MySQL
-- Complete a project to manage companies and their employees.
-- Required Features
 
+# Complete a project to manage companies and their employees.
+
+- Required Features
 - Basic Laravel Auth: ability to log in as administrator
 - Use database seeds to create first user with email admin@admin.com and password “password”
 - CRUD functionality for two menu items: Companies and Employees.

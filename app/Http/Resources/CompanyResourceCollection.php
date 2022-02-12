@@ -2,9 +2,9 @@
 
 namespace App\Http\Resources;
 
-use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Http\Resources\Json\JsonResource;
 
-class CompanyResourceCollection extends ResourceCollection
+class CompanyResourceCollection extends JsonResource
 {
     /**
      * Transform the resource collection into an array.
@@ -14,6 +14,13 @@ class CompanyResourceCollection extends ResourceCollection
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        return [
+            'company-id'    => $this->id,
+            'name'      => $this->name,
+            'email'      => $this->email,
+            'logo'      => $this->logo,
+            'website'      => $this->website,
+            'created'   => $this->created_at->toDayDateTimeString(),
+        ];
     }
 }

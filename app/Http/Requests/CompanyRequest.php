@@ -3,6 +3,10 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Http\JsonResponse;
 
 class CompanyRequest extends FormRequest
 {
@@ -25,9 +29,9 @@ class CompanyRequest extends FormRequest
     {
         return [
             'name'  => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'role'  =>  ['boolean']
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:companies'],
+            'logo' => ['string', 'min:8'],
+            'website' => ['string', 'min:8']
         ];
     }
 
@@ -39,10 +43,10 @@ class CompanyRequest extends FormRequest
     public function messages()
     {
         return [
-            'name.required'     => 'Your full name is required for Tunzi services',
+            'name.required'     => 'Your name is required for '. config('app.name') .' services',
             'email.required'    => 'Your valid email is required',
-            'password.required' => 'Please created a valid and secure password',
-            'role.boolean'     => 'true or false'
+            'logo' => 'Please upload a logo',
+            'website'     => 'Please enter the url of your website'
         ];
     }
 

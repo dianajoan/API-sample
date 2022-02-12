@@ -22,14 +22,16 @@ class UserController extends Controller
     public function index(Request $request)
     {
         if($request->user()){
-            if (sizeof(User::all()) < 1) {
+            if (count(User::all(['id'])) < 1) {
                 return response()->json([
                     'error' => 'No user found yet'
                 ], Response::HTTP_NOT_FOUND);
             }
             return UserResourceCollection::collection(User::latest()->paginate(10));
         }
-        return response()->json([ 'error' => 'Unauthenticated' ], Response::HTTP_UNAUTHORIZED);
+        return response()->json([
+            'error'     => 'unauthenticated. Please login first'
+        ], Response::HTTP_UNAUTHORIZED);
     }
 
     /**

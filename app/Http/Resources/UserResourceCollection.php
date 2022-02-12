@@ -2,9 +2,9 @@
 
 namespace App\Http\Resources;
 
-use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Http\Resources\Json\JsonResource;
 
-class UserResourceCollection extends ResourceCollection
+class UserResourceCollection extends JsonResource
 {
     /**
      * Transform the resource collection into an array.
@@ -14,6 +14,12 @@ class UserResourceCollection extends ResourceCollection
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        return [
+            'user-id'    => $this->id,
+            'name'      => $this->name,
+            'email'      => $this->email,
+            'is-admin'  => $this->is_admin == 1 ? true : false,
+            'created'   => $this->created_at->toDayDateTimeString(),
+        ];
     }
 }
