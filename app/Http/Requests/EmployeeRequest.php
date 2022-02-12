@@ -28,11 +28,11 @@ class EmployeeRequest extends FormRequest
     public function rules()
     {
         return [
-            'first_name'  => ['required', 'string', 'max:255'],
-            'last_name'  => ['required', 'string', 'max:255'],
-            'commpany_id'  => ['string', 'max:255'],
-            'email' => ['string', 'email', 'max:255', 'unique:employees'],
-            'phone'  => ['string', 'max:255'],
+            'first_name'    => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
+            'company_id'   => ['required', 'integer', 'max:255'],
+            'email'     => ['string', 'email', 'max:255', 'unique:employees'],
+            'phone'     => ['string', 'max:255'],
         ];
     }
 
@@ -44,10 +44,10 @@ class EmployeeRequest extends FormRequest
     public function messages()
     {
         return [
-            'first_name.required'     => 'Your first name is required for '. config('app.name') .' services',
-            'last_name.required'     => 'Your last name is required for '. config('app.name') .' services',
-            'company_id'     => 'Your company_id is for '. config('app.name') .' services',
-            'email'    => 'Your valid email',
+            'first_name.required'   => 'Your first name is required for '. config('app.name') .' services',
+            'last_name.required'    => 'Your last name is required for '. config('app.name') .' services',
+            'company_id.required'   => 'Your company_id is for '. config('app.name') .' services',
+            'email.required'    => 'Your valid email',
             'phone'    => 'Your phone is for '. config('app.name') .' services',
         ];
     }

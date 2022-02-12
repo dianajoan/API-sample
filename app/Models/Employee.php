@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Company;
+use App\Models\User;
 
 class Employee extends Model
 {
@@ -20,7 +21,8 @@ class Employee extends Model
         'last_name',
         'company_id',
         'email',
-        'phone'
+        'phone',
+        'user_id'
     ];
 
     /**
@@ -29,8 +31,13 @@ class Employee extends Model
      * @var array
      */
 
+    public function author()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
     public function company()
     {
-        return $this->belongsTo(Company::class);
+        return $this->belongsTo(Company::class, 'company_id');
     }
 }

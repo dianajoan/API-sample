@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Resources\EmployeeResourceCollection;
 use Illuminate\Support\Facades\Hash;
@@ -17,7 +18,7 @@ class EmployeeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         if($request->user()){
             if (sizeof(Employee::all()) < 1) {
@@ -36,15 +37,20 @@ class EmployeeController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(EmployeeRequest $request)
     {
         $employee = new Employee();
 
-        $employee->first_name     = $request->first_name;
-        $employee->last_name     = $request->last_name;
-        $employee->company_id     = $request->company_id;
+        $employee->first_name   = $request->first_name;
+        $employee->last_name    = $request->last_name;
+        $employee->company_id   = $request->company_id;
         $employee->email    = $request->email;
         $employee->phone    = $request->phone;
+
+        if($request->user()) {
+            $employee->user_id = $request->user()->id;
+        }
+
         $employee->save();
 
         return response()->json([
@@ -59,7 +65,7 @@ class EmployeeController extends Controller
      * @param  \App\Models\Employee  $employee
      * @return \Illuminate\Http\Response
      */
-    public function show(Employee $employee)
+    public function show(Request $request, $id)
     {
         if($request->user()){
             $employee = Employee::find($id);
@@ -82,7 +88,7 @@ class EmployeeController extends Controller
      * @param  \App\Models\Employee  $employee
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Employee $employee)
+    public function update(Request $request, $id)
     {
         $employee = Employee::find($id);
 
@@ -92,11 +98,18 @@ class EmployeeController extends Controller
             ], Response::HTTP_NOT_FOUND);
         }
 
-        $employee->update($request->all());
+
+        $employee->first_name = $request->first_name;
+        $employee->last_name = $request->last_name;
+        $employee->company_id = $request->company_id;
+        $employee->email = $request->email;
+        $employee->phone = $request->phone;
+        $employee->phone = $request->user_id;
+        $employee->save();
 
         return response()->json([
             'data' => new EmployeeResource($employee)
-        ], Response::HTTP_ACCEPTED);
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -105,7 +118,7 @@ class EmployeeController extends Controller
      * @param  \App\Models\Employee  $employee
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Employee $employee)
+    public function destroy($id)
     {
         $employee = Employee::find($id);
         

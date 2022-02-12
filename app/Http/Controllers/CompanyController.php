@@ -45,7 +45,11 @@ class CompanyController extends Controller
             $user_image = $request->file('logo');
             $filename = time() . '.' . $user_image->getClientOriginalName();
             $user_image->move( 'storage/public/', $filename );
-            $company->logo = $filename; // $request->file('logo')->getClientOriginalName();
+            $company->logo = $filename;
+        }
+
+        if($request->user()) {
+            $company->user_id = $request->user()->id;
         }
 
         $company->name      = $request->name;

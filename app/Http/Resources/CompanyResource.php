@@ -3,6 +3,8 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\EmployeeResourceCollection;
+use App\Http\Resources\UserResource;
 
 class CompanyResource extends JsonResource
 {
@@ -15,12 +17,14 @@ class CompanyResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'company-id'    => $this->id,
+            'company-id'=> $this->id,
             'name'      => $this->name,
-            'email'      => $this->email,
-            'logo'      => $this->logo,
-            'website'      => $this->website,
+            'email'     => $this->email,
+            'logo'      => asset('storage/public/'.$this->logo),
+            'website'   => $this->website,
             'created'   => $this->created_at->toDayDateTimeString(),
+            'author'    => $this->user_id ? new UserResource($this->author) : null,
+            'employees' => $this->employees
         ];
     }
 }

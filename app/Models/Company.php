@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Employee;
+use App\Models\User;
 
 class Company extends Model
 {
@@ -18,7 +20,8 @@ class Company extends Model
     	'name', 
         'email',
         'logo',
-        'website'
+        'website',
+        'user_id'
     ];
 
     /**
@@ -29,6 +32,11 @@ class Company extends Model
 
     public function author()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function employees()
+    {
+        return $this->hasMany(Employee::class, 'user_id');
     }
 }
