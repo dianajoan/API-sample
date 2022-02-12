@@ -14,17 +14,15 @@ class EmployeeController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        if($request->user()){
+            if (sizeof(Employee::all()) < 1) {
+                return response()->json([
+                    'error' => 'No employee found yet'
+                ], Response::HTTP_NOT_FOUND);
+            }
+            return EmployeeResourceCollection::collection(Employee::latest()->paginate(10));
+        }
+        return response()->json([ 'error' => 'Unauthenticated' ], Response::HTTP_UNAUTHORIZED);
     }
 
     /**
@@ -35,7 +33,19 @@ class EmployeeController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $employee = new Employee();
+
+        $employee->first_name     = $request->first_name;
+        $employee->last_name     = $request->last_name;
+        $employee->company_id     = $request->company_id;
+        $employee->email    = $request->email;
+        $employee->phone    = $request->phone;
+        $employee->save();
+
+        return response()->json([
+            'message' => 'Employee account and profile created successfully!',
+            'data'  => new EmployeeResource($employee)
+        ], Response::HTTP_CREATED);
     }
 
     /**
@@ -46,18 +56,18 @@ class EmployeeController extends Controller
      */
     public function show(Employee $employee)
     {
-        //
-    }
+        if($request->user()){
+            $employee = Employee::find($id);
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Employee  $employee
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Employee $employee)
-    {
-        //
+            if (!$employee) {
+                return response()->json([
+                    'error' => 'Employee not found!!'
+                ], Response::HTTP_NOT_FOUND);
+            }
+
+            return new EmployeeResource($employee);
+        }
+        return response()->json([ 'error' => 'Unauthenticated' ], Response::HTTP_UNAUTHORIZED);
     }
 
     /**
@@ -69,7 +79,19 @@ class EmployeeController extends Controller
      */
     public function update(Request $request, Employee $employee)
     {
-        //
+        $employee = Employee::find($id);
+
+        if (!$employee) {
+            return response()->json([
+                'error' => 'Employee not found!'
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        $employee->update($request->all());
+
+        return response()->json([
+            'data' => new EmployeeResource($employee)
+        ], Response::HTTP_ACCEPTED);
     }
 
     /**
@@ -80,6 +102,19 @@ class EmployeeController extends Controller
      */
     public function destroy(Employee $employee)
     {
-        //
+        $employee = Employee::find($id);
+        
+        if (!$employee) {
+            return response()->json([
+                'error' => 'Employee account not found!'
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        $employee->delete();
+        
+        return response()->json(
+            ['message' => 'Employee account deleted successfully.'],
+            Response::HTTP_PARTIAL_CONTENT
+        );
     }
 }

@@ -85,12 +85,6 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        if(!$this->gotUser->hasPermission('edit_own_profile') || !$this->gotUser->hasPermission('edit_user')) {
-            return response()->json([
-                'error'  => 'Restricted Access'
-            ], Response::HTTP_FORBIDDEN)->header('Content-Type', 'application/json');
-        }
-
         $user = User::find($id);
 
         if (!$user) {
@@ -114,12 +108,6 @@ class UserController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        if(!$this->gotUser->hasPermission('delete_user')) {
-            return response()->json([
-                'error'  => 'Restricted Access'
-            ], Response::HTTP_FORBIDDEN)->header('Content-Type', 'application/json');
-        }
-
         $user = User::find($id);
         
         if (!$user) {
