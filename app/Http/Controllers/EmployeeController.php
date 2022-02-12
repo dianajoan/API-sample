@@ -39,24 +39,29 @@ class EmployeeController extends Controller
      */
     public function store(EmployeeRequest $request)
     {
-        $employee = new Employee();
-
-        $employee->first_name   = $request->first_name;
-        $employee->last_name    = $request->last_name;
-        $employee->company_id   = $request->company_id;
-        $employee->email    = $request->email;
-        $employee->phone    = $request->phone;
-
         if($request->user()) {
-            $employee->user_id = $request->user()->id;
+            $employee = new Employee();
+
+            $employee->first_name   = $request->first_name;
+            $employee->last_name    = $request->last_name;
+            $employee->company_id   = $request->company_id;
+            $employee->email    = $request->email;
+            $employee->phone    = $request->phone;
+
+            if($request->user()) {
+                $employee->user_id = $request->user()->id;
+            }
+
+            $employee->save();
+
+            return response()->json([
+                'message' => 'Employee account and profile created successfully!',
+                'data'  => new EmployeeResource($employee)
+            ], Response::HTTP_CREATED);
         }
-
-        $employee->save();
-
         return response()->json([
-            'message' => 'Employee account and profile created successfully!',
-            'data'  => new EmployeeResource($employee)
-        ], Response::HTTP_CREATED);
+            'error'     => 'unauthenticated. Please login first'
+        ], Response::HTTP_UNAUTHORIZED);
     }
 
     /**
@@ -90,26 +95,31 @@ class EmployeeController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $employee = Employee::find($id);
+        if($request->user()) {
+            $employee = Employee::find($id);
 
-        if (!$employee) {
+            if (!$employee) {
+                return response()->json([
+                    'error' => 'Employee not found!'
+                ], Response::HTTP_NOT_FOUND);
+            }
+
+
+            $employee->first_name = $request->first_name;
+            $employee->last_name = $request->last_name;
+            $employee->company_id = $request->company_id;
+            $employee->email = $request->email;
+            $employee->phone = $request->phone;
+            $employee->phone = $request->user_id;
+            $employee->save();
+
             return response()->json([
-                'error' => 'Employee not found!'
-            ], Response::HTTP_NOT_FOUND);
+                'data' => new EmployeeResource($employee)
+            ], Response::HTTP_OK);
         }
-
-
-        $employee->first_name = $request->first_name;
-        $employee->last_name = $request->last_name;
-        $employee->company_id = $request->company_id;
-        $employee->email = $request->email;
-        $employee->phone = $request->phone;
-        $employee->phone = $request->user_id;
-        $employee->save();
-
         return response()->json([
-            'data' => new EmployeeResource($employee)
-        ], Response::HTTP_OK);
+            'error'     => 'unauthenticated. Please login first'
+        ], Response::HTTP_UNAUTHORIZED);
     }
 
     /**
@@ -118,21 +128,26 @@ class EmployeeController extends Controller
      * @param  \App\Models\Employee  $employee
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
-        $employee = Employee::find($id);
-        
-        if (!$employee) {
-            return response()->json([
-                'error' => 'Employee account not found!'
-            ], Response::HTTP_NOT_FOUND);
-        }
+        if($request->user()){
+            $employee = Employee::find($id);
+            
+            if (!$employee) {
+                return response()->json([
+                    'error' => 'Employee account not found!'
+                ], Response::HTTP_NOT_FOUND);
+            }
 
-        $employee->delete();
-        
-        return response()->json(
-            ['message' => 'Employee account deleted successfully.'],
-            Response::HTTP_PARTIAL_CONTENT
-        );
+            $employee->delete();
+            
+            return response()->json(
+                ['message' => 'Employee account deleted successfully.'],
+                Response::HTTP_PARTIAL_CONTENT
+            );
+        }
+        return response()->json([
+            'error'     => 'unauthenticated. Please login first'
+        ], Response::HTTP_UNAUTHORIZED);
     }
 }

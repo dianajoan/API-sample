@@ -39,28 +39,33 @@ class CompanyController extends Controller
      */
     public function store(CompanyRequest $request)
     {
-        $company = new Company();
+        if($request->user()){
+            $company = new Company();
 
-        if( $request->hasFile('logo') ) {
-            $user_image = $request->file('logo');
-            $filename = time() . '.' . $user_image->getClientOriginalName();
-            $user_image->move( 'storage/public/', $filename );
-            $company->logo = $filename;
+            if( $request->hasFile('logo') ) {
+                $user_image = $request->file('logo');
+                $filename = time() . '.' . $user_image->getClientOriginalName();
+                $user_image->move( 'storage/public/', $filename );
+                $company->logo = $filename;
+            }
+
+            if($request->user()) {
+                $company->user_id = $request->user()->id;
+            }
+
+            $company->name      = $request->name;
+            $company->email     = $request->email;
+            $company->website   = $request->website;
+            $company->save();
+
+            return response()->json([
+                'message' => 'Company account saved successfully!',
+                'data'  => new CompanyResource($company)
+            ], Response::HTTP_CREATED);
         }
-
-        if($request->user()) {
-            $company->user_id = $request->user()->id;
-        }
-
-        $company->name      = $request->name;
-        $company->email     = $request->email;
-        $company->website   = $request->website;
-        $company->save();
-
         return response()->json([
-            'message' => 'Company account saved successfully!',
-            'data'  => new CompanyResource($company)
-        ], Response::HTTP_CREATED);
+            'error'     => 'unauthenticated. Please login first'
+        ], Response::HTTP_UNAUTHORIZED);
     }
 
     /**
@@ -72,17 +77,22 @@ class CompanyController extends Controller
     public function show(Request $request, $id)
     {
         if($request->user()){
-            $company = Company::find($id);
+            if($request->user()){
+                $company = Company::find($id);
 
-            if (!$company) {
-                return response()->json([
-                    'error' => 'Company not found!!'
-                ], Response::HTTP_NOT_FOUND);
+                if (!$company) {
+                    return response()->json([
+                        'error' => 'Company not found!!'
+                    ], Response::HTTP_NOT_FOUND);
+                }
+
+                return new CompanyResource($company);
             }
-
-            return new CompanyResource($company);
+            return response()->json([ 'error' => 'Unauthenticated' ], Response::HTTP_UNAUTHORIZED);
         }
-        return response()->json([ 'error' => 'Unauthenticated' ], Response::HTTP_UNAUTHORIZED);
+        return response()->json([
+            'error'     => 'unauthenticated. Please login first'
+        ], Response::HTTP_UNAUTHORIZED);
     }
 
     /**
@@ -94,19 +104,24 @@ class CompanyController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $company = Company::find($id);
+        if($request->user()) {
+            $company = Company::find($id);
 
-        if (!$company) {
+            if (!$company) {
+                return response()->json([
+                    'error' => 'Company not found!'
+                ], Response::HTTP_NOT_FOUND);
+            }
+
+            $company->update($request->all());
+
             return response()->json([
-                'error' => 'Company not found!'
-            ], Response::HTTP_NOT_FOUND);
+                'data' => new CompanyResource($company)
+            ], Response::HTTP_ACCEPTED);
         }
-
-        $company->update($request->all());
-
         return response()->json([
-            'data' => new CompanyResource($company)
-        ], Response::HTTP_ACCEPTED);
+            'error'     => 'unauthenticated. Please login first'
+        ], Response::HTTP_UNAUTHORIZED);
     }
 
     /**
@@ -117,19 +132,24 @@ class CompanyController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        $company = Company::find($id);
-        
-        if (!$company) {
-            return response()->json([
-                'error' => 'Company account not found!'
-            ], Response::HTTP_NOT_FOUND);
-        }
+        If($request->user()) {
+            $company = Company::find($id);
+            
+            if (!$company) {
+                return response()->json([
+                    'error' => 'Company account not found!'
+                ], Response::HTTP_NOT_FOUND);
+            }
 
-        $company->delete();
-        
-        return response()->json(
-            ['message' => 'Company account deleted successfully.'],
-            Response::HTTP_PARTIAL_CONTENT
-        );
+            $company->delete();
+            
+            return response()->json(
+                ['message' => 'Company account deleted successfully.'],
+                Response::HTTP_PARTIAL_CONTENT
+            );
+        }
+        return response()->json([
+            'error'     => 'unauthenticated. Please login first'
+        ], Response::HTTP_UNAUTHORIZED);
     }
 }
