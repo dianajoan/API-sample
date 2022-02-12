@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Resources\CompanyResourceCollection;
 use Illuminate\Support\Facades\Hash;
@@ -20,7 +21,7 @@ class CompanyController extends Controller
     public function index(Request $request)
     {
         if($request->user()){
-            if (sizeof(Company::all()) < 1) {
+            if (sizeof(Company::all(['id'])) < 1) {
                 return response()->json([
                     'error' => 'No company found yet'
                 ], Response::HTTP_NOT_FOUND);
@@ -40,14 +41,20 @@ class CompanyController extends Controller
     {
         $company = new Company();
 
-        $company->name     = $request->name;
-        $company->email    = $request->email;
-        $company->logo    = $request->logo;
-        $company->website    = $request->website;
+        if( $request->hasFile('logo') ) {
+            $user_image = $request->file('logo');
+            $filename = time() . '.' . $user_image->getClientOriginalName();
+            $user_image->move( 'storage/public/', $filename );
+            $company->logo = $filename; // $request->file('logo')->getClientOriginalName();
+        }
+
+        $company->name      = $request->name;
+        $company->email     = $request->email;
+        $company->website   = $request->website;
         $company->save();
 
         return response()->json([
-            'message' => 'Company account and profile created successfully!',
+            'message' => 'Company account saved successfully!',
             'data'  => new CompanyResource($company)
         ], Response::HTTP_CREATED);
     }

@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 class CompanyResourceCollection extends JsonResource
 {
@@ -15,11 +16,11 @@ class CompanyResourceCollection extends JsonResource
     public function toArray($request)
     {
         return [
-            'company-id'    => $this->id,
+            'company-id'=> $this->id,
             'name'      => $this->name,
-            'email'      => $this->email,
-            'logo'      => $this->logo,
-            'website'      => $this->website,
+            'email'     => $this->email,
+            'logo'      => asset('storage/public/'.$this->logo),
+            'website'   => $this->website,
             'created'   => $this->created_at->toDayDateTimeString(),
         ];
     }

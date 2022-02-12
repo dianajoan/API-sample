@@ -30,7 +30,7 @@ class CompanyRequest extends FormRequest
         return [
             'name'  => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:companies'],
-            'logo' => ['string', 'min:8'],
+            'logo' => ['image','mimes:jpg,png,jpeg,gif,svg','max:2048'],
             'website' => ['string', 'min:8']
         ];
     }
@@ -45,7 +45,7 @@ class CompanyRequest extends FormRequest
         return [
             'name.required'     => 'Your name is required for '. config('app.name') .' services',
             'email.required'    => 'Your valid email is required',
-            'logo' => 'Please upload a logo',
+            'logo.required'          => 'Please upload a logo',
             'website'     => 'Please enter the url of your website'
         ];
     }
